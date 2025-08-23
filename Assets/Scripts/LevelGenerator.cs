@@ -3,26 +3,42 @@ using System.Collections.Generic;
 
 public class LevelGenerator : MonoBehaviour
 {
+    [Header("Room Settings")]
     [SerializeField] private GameObject blockPrefab;
-    [SerializeField] private int floorWidth = 3;
-    [SerializeField] private int floorHeight = 6;
+    [SerializeField] private int floorWidth;
+    [SerializeField] private int floorHeight;
     [SerializeField] private int roomBorder = 1;
-    [SerializeField] private int totalRooms = 5;
+    [SerializeField] private int totalRooms;
 
     private List<Vector2> spawnedRooms = new List<Vector2>();
-    private Room roomBuilder;
+    private Dictionary<RoomType, RoomBase> roomTypes;
+
+    private void Awake()
+    {
+        roomTypes = new Dictionary<RoomType, RoomBase>
+        {
+            { RoomType.Normal, new RoomNormal(blockPrefab, transform, floorWidth, floorHeight) }
+            // { RoomType.LShaped, new LShapedRoom(blockPrefab, transform) },
+            // { RoomType.Long, new LongRoom(blockPrefab, transform) }, // You can add LongRoom and BigRoom similarly
+            // { RoomType.Big, new BigRoom(blockPrefab, transform) }
+        };
+    }
 
     private void Start()
     {
-        roomBuilder = new Room(blockPrefab, transform);
-
         Vector2 startPos = Vector2.zero;
-        roomBuilder.GenerateRoom(RoomType.Normal, startPos, floorWidth, floorHeight);
+        SpawnRoom(RoomType.Normal, startPos);
         spawnedRooms.Add(startPos);
 
         for (int i = 1; i < totalRooms; i++)
             SpawnNextRoom();
     }
+
+    private GameObject SpawnRoom(RoomType type, Vector2 position)
+    {
+        return roomTypes[type].Generate(position);
+    }
+
 
     private void SpawnNextRoom()
     {
@@ -31,12 +47,12 @@ public class LevelGenerator : MonoBehaviour
 
         if (!spawnedRooms.Contains(newPos))
         {
-            roomBuilder.GenerateRoom(RoomType.Normal, newPos, floorWidth, floorHeight);
+            SpawnRoom(RoomType.Normal, newPos);
             spawnedRooms.Add(newPos);
         }
         else
         {
-            SpawnNextRoom(); // Retry if position is taken
+            SpawnNextRoom();
         }
     }
 
