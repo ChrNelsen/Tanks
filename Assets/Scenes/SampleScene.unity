@@ -724,10 +724,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20a8e20964cdd614c83f4a1231c63eeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blockPrefab: {fileID: 4717567418496019476, guid: 5f053a527b8f0ee4383d9c619a4b666e, type: 3}
-  floorWidth: 22
-  floorHeight: 16
-  roomBorder: 4
+  blockPrefab: {fileID: 919132149155446097, guid: 3d56a007221d9a0489cef868b09082c9, type: 3}
+  floorWidth: 23
+  floorHeight: 15
+  roomBorder: 2
   totalRooms: 8
 --- !u!1 &814164175
 GameObject:

@@ -66,33 +66,33 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    private void ConnectRooms(Vector2 from, Vector2 to)
-    {
-        int halfWidth = (floorWidth - 1) / 2;
-        int halfHeight = (floorHeight - 1) / 2;
+private void ConnectRooms(Vector2 from, Vector2 to)
+{
+    int halfWidth = (floorWidth - 1) / 2;
+    int halfHeight = (floorHeight - 1) / 2;
 
-        Vector2 start = from;
-        Vector2 end = to;
+    Vector2 start = from;
+    Vector2 end = to;
 
-        // Move start/end to room edges
-        if (to.x > from.x) { start.x += halfWidth + 1; end.x -= halfWidth + 1; }
-        if (to.x < from.x) { start.x -= halfWidth + 1; end.x += halfWidth + 1; }
-        if (to.y > from.y) { start.y += halfHeight + 1; end.y -= halfHeight + 1; }
-        if (to.y < from.y) { start.y -= halfHeight + 1; end.y += halfHeight + 1; }
+    // Move start/end to room edges
+    if (to.x > from.x) { start.x += halfWidth + 1; end.x -= halfWidth + 1; }
+    if (to.x < from.x) { start.x -= halfWidth + 1; end.x += halfWidth + 1; }
+    if (to.y > from.y) { start.y += halfHeight + 1; end.y -= halfHeight + 1; }
+    if (to.y < from.y) { start.y -= halfHeight + 1; end.y += halfHeight + 1; }
 
-        // Corner point where the L-shape turns
-        Vector2 corner = new Vector2(end.x, start.y);
+    // Corner point where the L-shape turns
+    Vector2 corner = new Vector2(end.x, start.y);
 
-        // Horizontal: stop BEFORE the corner
-        int xStep = start.x < corner.x ? 1 : -1;
-        for (int x = (int)start.x; x != (int)corner.x; x += xStep)
-            Instantiate(blockPrefab, new Vector3(x, -1f, start.y), Quaternion.identity, transform);
+    // Horizontal: stop BEFORE the corner
+    int xStep = start.x < corner.x ? 1 : -1;
+    for (int x = (int)start.x; x != (int)corner.x; x += xStep)
+        Instantiate(blockPrefab, new Vector3(x, -1f, start.y), Quaternion.identity, transform);
 
-        // Vertical: starts AT the corner, goes to end
-        int yStep = corner.y < end.y ? 1 : -1;
-        for (int y = (int)corner.y; y != (int)end.y + yStep; y += yStep)
-            Instantiate(blockPrefab, new Vector3(end.x, -1f, y), Quaternion.identity, transform);
-    }
+    // Vertical: starts AT the corner, goes to end
+    int yStep = corner.y < end.y ? 1 : -1;
+    for (int y = (int)corner.y; y != (int)end.y + yStep; y += yStep)
+        Instantiate(blockPrefab, new Vector3(end.x, -1f, y), Quaternion.identity, transform);
+}
 
 
 
