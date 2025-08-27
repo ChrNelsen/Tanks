@@ -119,6 +119,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &4293714
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4293715}
+  m_Layer: 0
+  m_Name: Tank
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4293715
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4293714}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.6353376, y: -2.3187451, z: 0.9163933}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -421,12 +452,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20a8e20964cdd614c83f4a1231c63eeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blockPrefab: {fileID: 919132149155446097, guid: 7701996bdface1943b3bf1a24d76ede3, type: 3}
+  blockPrefab: {fileID: 2461758148508901974, guid: 817b3688313af9a4d853884992b7185c, type: 3}
   floorWidth: 23
   floorHeight: 15
-  roomBorder: 5
+  roomBorder: 4
   totalRooms: 8
-  corridorWidth: 7
+  corridorWidth: 3
 --- !u!1 &814164175
 GameObject:
   m_ObjectHideFlags: 0
@@ -673,4 +704,5 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 814164179}
   - {fileID: 605204698}
+  - {fileID: 4293715}
   - {fileID: 1862846457222816911}

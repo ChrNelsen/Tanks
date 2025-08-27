@@ -5,7 +5,8 @@ using UnityEditor.Experimental.GraphView;
 public class LevelGenerator : MonoBehaviour
 {
     [Header("Room Settings")]
-    [SerializeField] private GameObject blockPrefab;
+    [SerializeField] private GameObject wallPrefab;
+    [SerializeField] private GameObject groundPrefab;
     [SerializeField] private int floorWidth;
     [SerializeField] private int floorHeight;
     [SerializeField] private int roomBorder = 1;
@@ -19,7 +20,7 @@ public class LevelGenerator : MonoBehaviour
     {
         roomTypes = new Dictionary<RoomType, RoomBase>
         {
-            { RoomType.Normal, new RoomNormal(blockPrefab, transform, floorWidth, floorHeight) }
+            { RoomType.Normal, new RoomNormal(groundPrefab, transform, floorWidth, floorHeight) }
         };
     }
 
@@ -80,12 +81,15 @@ public class LevelGenerator : MonoBehaviour
 
             for (float x = startX; x <= endX; x++)
             {
-                Instantiate(blockPrefab, new Vector3(x, -1f, from.y), Quaternion.identity, transform);
+                Instantiate(groundPrefab, new Vector3(x, -1f, from.y), Quaternion.identity, transform);
+
+                Instantiate(wallPrefab, new Vector3(x, 0f, from.y + 1 + (corridorWidth - 1) / 2), Quaternion.identity, transform);
+                Instantiate(wallPrefab, new Vector3(x, -0f, from.y - 1 - (corridorWidth - 1) / 2), Quaternion.identity, transform);
 
                 for (int w = 1; w <= (corridorWidth - 1) / 2; w++)
                 {
-                    Instantiate(blockPrefab, new Vector3(x, -1f, from.y + w), Quaternion.identity, transform);
-                    Instantiate(blockPrefab, new Vector3(x, -1f, from.y - w), Quaternion.identity, transform);
+                    Instantiate(groundPrefab, new Vector3(x, -1f, from.y + w), Quaternion.identity, transform);
+                    Instantiate(groundPrefab, new Vector3(x, -1f, from.y - w), Quaternion.identity, transform);
                 }
             }
         }
@@ -97,17 +101,19 @@ public class LevelGenerator : MonoBehaviour
 
             for (float y = startY; y <= endY; y++)
             {
-                Instantiate(blockPrefab, new Vector3(from.x, -1f, y), Quaternion.identity, transform);
+                Instantiate(groundPrefab, new Vector3(from.x, -1f, y), Quaternion.identity, transform);
+
+                Instantiate(wallPrefab, new Vector3(from.x + 1 + (corridorWidth - 1) / 2, 0f, y), Quaternion.identity, transform);
+                Instantiate(wallPrefab, new Vector3(from.x - 1 - (corridorWidth - 1) / 2, 0f, y), Quaternion.identity, transform);
 
                 for (int w = 1; w <= (corridorWidth - 1) / 2; w++)
                 {
-                    Instantiate(blockPrefab, new Vector3(from.x + w, -1f, y), Quaternion.identity, transform);
-                    Instantiate(blockPrefab, new Vector3(from.x - w, -1f, y), Quaternion.identity, transform);
+                    Instantiate(groundPrefab, new Vector3(from.x + w, -1f, y), Quaternion.identity, transform);
+                    Instantiate(groundPrefab, new Vector3(from.x - w, -1f, y), Quaternion.identity, transform);
                 }
             }
         }
     }
-
 
     public enum RoomType { Normal, Long, Big, LShaped }
     public enum Direction { Up, Down, Left, Right }
