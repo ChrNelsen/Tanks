@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine.UIElements;
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -68,24 +69,42 @@ public class LevelGenerator : MonoBehaviour
             default: return currentPos;
         }
     }
+
     private void ConnectRooms(Vector2 from, Vector2 to)
     {
         float halfWidth = (floorWidth - 1) / 2f + 1;
-        float halfHeight = (floorHeight - 1) / 2f + 1;
+        float halfHeight = (floorHeight - 1) / 2f + 1; // 15 -> 8
+        float halfCorridor = (corridorWidth - 1) / 2f + 1;  //5 -> 3
 
         // Horizontal corridor (same Y)
         if (from.y == to.y)
         {
             float startX = from.x < to.x ? from.x + halfWidth : to.x + halfWidth;
             float endX = from.x < to.x ? to.x - halfWidth : from.x - halfWidth;
+            
+            // Trying to add room border here 
+            for (float i = 1; i <= halfHeight - halfCorridor; i++)
+            {
+
+                // Left side wall at the start 
+                Vector3 postion = new Vector3(startX, 0f, from.y + 1 + i + (corridorWidth - 1) / 2);
+
+                Debug.Log(postion.ToString());
+                Instantiate(wallPrefab, new Vector3(startX, 0f, from.y + 1 + i + (corridorWidth - 1) / 2), Quaternion.identity, transform);
+                // Right side wall at the start 
+                Instantiate(wallPrefab, new Vector3(startX, 0f, from.y - 1 - i - (corridorWidth - 1) / 2), Quaternion.identity, transform);
+            }
 
             for (float x = startX; x <= endX; x++)
             {
+                // Add first line of blocks from point A to B
                 Instantiate(groundPrefab, new Vector3(x, -1f, from.y), Quaternion.identity, transform);
 
+                // Add Border
                 Instantiate(wallPrefab, new Vector3(x, 0f, from.y + 1 + (corridorWidth - 1) / 2), Quaternion.identity, transform);
                 Instantiate(wallPrefab, new Vector3(x, -0f, from.y - 1 - (corridorWidth - 1) / 2), Quaternion.identity, transform);
 
+                // Add rest of ground blocks creating width
                 for (int w = 1; w <= (corridorWidth - 1) / 2; w++)
                 {
                     Instantiate(groundPrefab, new Vector3(x, -1f, from.y + w), Quaternion.identity, transform);

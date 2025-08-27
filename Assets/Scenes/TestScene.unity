@@ -2353,7 +2353,7 @@ Transform:
   m_GameObject: {fileID: 605204697}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.9536514, y: 1.5225554, z: 1.3614101}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2377,7 +2377,7 @@ MonoBehaviour:
   floorHeight: 15
   roomBorder: 4
   totalRooms: 8
-  corridorWidth: 3
+  corridorWidth: 5
 --- !u!4 &620859112 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5282915361621164593, guid: 346b8ea0baf58674683bfba1533681b8, type: 3}
