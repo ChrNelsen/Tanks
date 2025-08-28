@@ -1,24 +1,26 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine.UIElements;
 
 public class LevelGenerator : MonoBehaviour
 {
     [Header("Room Settings")]
-    [SerializeField] private GameObject wallPrefab;
-    [SerializeField] private GameObject groundPrefab;
-    [SerializeField] private int floorWidth;
-    [SerializeField] private int floorHeight;
-    [SerializeField] private int roomBorder = 1;
-    [SerializeField] private int totalRooms;
-    [SerializeField] private int corridorWidth = 1;
+    [SerializeField] private GameObject wallPrefab;     // Wall block prefab
+    [SerializeField] private GameObject groundPrefab;   // Floor block prefab
+    [SerializeField] private int floorWidth;            // Width of each room: X
+    [SerializeField] private int floorHeight;           // Height of each room: Z
+    [SerializeField] private int roomBorder = 1;        // Gap between rooms
+    [SerializeField] private int totalRooms;            // Total number of rooms
+    [SerializeField] private int corridorWidth = 1;     // Width of corridors
 
-    private List<Vector2> spawnedRooms = new List<Vector2>();
+    // Graph of all spawned rooms (key = grid position)
+    private Dictionary<Vector2Int, RoomBase> roomGraph = new Dictionary<Vector2Int, RoomBase>();
+
+    // Available room types
     private Dictionary<RoomType, RoomBase> roomTypes;
 
     private void Awake()
     {
+        // Register room types
         roomTypes = new Dictionary<RoomType, RoomBase>
         {
             { RoomType.Normal, new RoomNormal(groundPrefab, transform, floorWidth, floorHeight) }
@@ -27,45 +29,62 @@ public class LevelGenerator : MonoBehaviour
 
     private void Start()
     {
-        Vector2 startPos = Vector2.zero;
-        SpawnRoom(RoomType.Normal, startPos);
-        spawnedRooms.Add(startPos);
+        // Spawn starting room at origin
+        GetOrCreateRoom(Vector2Int.zero, RoomType.Normal);
 
+        // Spawn rest of rooms
         for (int i = 1; i < totalRooms; i++)
+        {
             SpawnNextRoom();
-    }
+        }
+        ConnectAllRooms();
+        AddBordersToAllRooms();
 
-    private GameObject SpawnRoom(RoomType type, Vector2 position)
-    {
-        return roomTypes[type].Generate(position);
-    }
 
+    }
 
     private void SpawnNextRoom()
     {
-        Vector2 baseRoom = spawnedRooms[Random.Range(0, spawnedRooms.Count)];
-        Vector2 newPos = GetAdjacentPosition(baseRoom, (Direction)Random.Range(0, 4));
+        Vector2Int baseRoomPos = GetRandomRoomPosition();
+        Vector2Int newPos = GetAdjacentPosition(baseRoomPos, (Direction)Random.Range(0, 4));
 
-        if (!spawnedRooms.Contains(newPos))
+        // Only spawn if position is unoccupied
+        if (!roomGraph.ContainsKey(newPos))
         {
-            SpawnRoom(RoomType.Normal, newPos);
-            spawnedRooms.Add(newPos);
-            ConnectRooms(baseRoom, newPos);
+            GetOrCreateRoom(newPos, RoomType.Normal);
         }
         else
         {
-            SpawnNextRoom();
+            SpawnNextRoom(); // Retry if that position is taken
         }
     }
 
-    private Vector2 GetAdjacentPosition(Vector2 currentPos, Direction dir)
+    private RoomBase GetOrCreateRoom(Vector2Int position, RoomType type)
+    {
+        if (!roomGraph.TryGetValue(position, out RoomBase room))
+        {
+            room = (RoomBase)System.Activator.CreateInstance(roomTypes[type].GetType(), groundPrefab, transform, floorWidth, floorHeight);
+            room.Generate(GridToWorld(position));
+            room.SetGridPostion(position);
+            roomGraph[position] = room;
+        }
+        return room;
+    }
+
+    private Vector2Int GetRandomRoomPosition()
+    {
+        var keys = new List<Vector2Int>(roomGraph.Keys);
+        return keys[Random.Range(0, keys.Count)];
+    }
+
+    private Vector2Int GetAdjacentPosition(Vector2Int currentPos, Direction dir)
     {
         switch (dir)
         {
-            case Direction.Up: return currentPos + new Vector2(0, floorHeight + roomBorder);
-            case Direction.Down: return currentPos - new Vector2(0, floorHeight + roomBorder);
-            case Direction.Left: return currentPos - new Vector2(floorWidth + roomBorder, 0);
-            case Direction.Right: return currentPos + new Vector2(floorWidth + roomBorder, 0);
+            case Direction.Up: return currentPos + new Vector2Int(0, 1);
+            case Direction.Down: return currentPos - new Vector2Int(0, 1);
+            case Direction.Left: return currentPos - new Vector2Int(1, 0);
+            case Direction.Right: return currentPos + new Vector2Int(1, 0);
             default: return currentPos;
         }
     }
@@ -79,39 +98,27 @@ public class LevelGenerator : MonoBehaviour
         // Horizontal corridor (same Y)
         if (from.y == to.y)
         {
-            float startX = from.x < to.x ? from.x + halfWidth : to.x + halfWidth;
-            float endX = from.x < to.x ? to.x - halfWidth : from.x - halfWidth;
-            
-            // Trying to add room border here 
-            for (float i = 1; i <= halfHeight - halfCorridor; i++)
-            {
-
-                // Left side wall at the start 
-                Vector3 postion = new Vector3(startX, 0f, from.y + 1 + i + (corridorWidth - 1) / 2);
-
-                Debug.Log(postion.ToString());
-                Instantiate(wallPrefab, new Vector3(startX, 0f, from.y + 1 + i + (corridorWidth - 1) / 2), Quaternion.identity, transform);
-                // Right side wall at the start 
-                Instantiate(wallPrefab, new Vector3(startX, 0f, from.y - 1 - i - (corridorWidth - 1) / 2), Quaternion.identity, transform);
-            }
+            float startX = Mathf.Min(from.x, to.x) + halfWidth;
+            float endX = Mathf.Max(from.x, to.x) - halfWidth;
 
             for (float x = startX; x <= endX; x++)
             {
-                // Add first line of blocks from point A to B
+                // Center ground
                 Instantiate(groundPrefab, new Vector3(x, -1f, from.y), Quaternion.identity, transform);
 
-                // Add Border
-                Instantiate(wallPrefab, new Vector3(x, 0f, from.y + 1 + (corridorWidth - 1) / 2), Quaternion.identity, transform);
-                Instantiate(wallPrefab, new Vector3(x, -0f, from.y - 1 - (corridorWidth - 1) / 2), Quaternion.identity, transform);
-
-                // Add rest of ground blocks creating width
+                // Corridor width
                 for (int w = 1; w <= (corridorWidth - 1) / 2; w++)
                 {
                     Instantiate(groundPrefab, new Vector3(x, -1f, from.y + w), Quaternion.identity, transform);
                     Instantiate(groundPrefab, new Vector3(x, -1f, from.y - w), Quaternion.identity, transform);
                 }
+
+                // Corridor borders
+                Instantiate(wallPrefab, new Vector3(x, 0f, from.y + halfCorridor), Quaternion.identity, transform);
+                Instantiate(wallPrefab, new Vector3(x, 0f, from.y - halfCorridor), Quaternion.identity, transform);
             }
         }
+
         // Vertical corridor (same X)
         else if (from.x == to.x)
         {
@@ -120,20 +127,97 @@ public class LevelGenerator : MonoBehaviour
 
             for (float y = startY; y <= endY; y++)
             {
+                // Center ground
                 Instantiate(groundPrefab, new Vector3(from.x, -1f, y), Quaternion.identity, transform);
 
-                Instantiate(wallPrefab, new Vector3(from.x + 1 + (corridorWidth - 1) / 2, 0f, y), Quaternion.identity, transform);
-                Instantiate(wallPrefab, new Vector3(from.x - 1 - (corridorWidth - 1) / 2, 0f, y), Quaternion.identity, transform);
-
+                // Corridor width
                 for (int w = 1; w <= (corridorWidth - 1) / 2; w++)
                 {
                     Instantiate(groundPrefab, new Vector3(from.x + w, -1f, y), Quaternion.identity, transform);
                     Instantiate(groundPrefab, new Vector3(from.x - w, -1f, y), Quaternion.identity, transform);
                 }
+
+                // Corridor borders
+                Instantiate(wallPrefab, new Vector3(from.x + halfCorridor, 0f, y), Quaternion.identity, transform);
+                Instantiate(wallPrefab, new Vector3(from.x - halfCorridor, 0f, y), Quaternion.identity, transform);
             }
         }
     }
 
+    private void ConnectAllRooms()
+    {
+        // Loop through all rooms in the graph
+        foreach (var kvp in roomGraph)
+        {
+            Vector2Int gridPos = kvp.Key;      // logical position
+            RoomBase room = kvp.Value;
+
+            // Check all four directions
+            Vector2Int[] neighborOffsets = new Vector2Int[]
+            {
+                new Vector2Int(0, 1),   // Up
+                new Vector2Int(0, -1),  // Down
+                new Vector2Int(1, 0),   // Right
+                new Vector2Int(-1, 0)   // Left
+            };
+
+            // Offsets for neighbors in logical space
+            foreach (Vector2Int offset in neighborOffsets)
+            {
+                Vector2Int neighborPos = gridPos + offset;
+
+                // Only connect if neighbor exists and they aren't already connected
+                if (roomGraph.TryGetValue(neighborPos, out RoomBase neighbor) && !room.Neighbors.Contains(neighbor))
+                {
+                    // Update the graph connection
+                    room.Connect(neighbor);
+
+                    // Convert logical → world for corridor drawing
+                    Vector2 fromWorld = GridToWorld(gridPos);
+                    Vector2 toWorld = GridToWorld(neighborPos);
+
+                    // Draw the corridor physically
+                    ConnectRooms(fromWorld, toWorld);
+                }
+            }
+        }
+    }
+
+    private void AddBordersToAllRooms()
+    {
+        float halfWidth = (floorWidth - 1) / 2f + 1;
+        float halfHeight = (floorHeight - 1) / 2f + 1; // 15 -> 8
+        float halfCorridor = (corridorWidth - 1) / 2f + 1;  //5 -> 3
+
+        foreach (RoomBase room in roomGraph.Values)
+        {
+            Vector2 roomWorldPos = GridToWorld(room.GridPosition);
+
+            if (!room.HasNeighbor(Direction.Up))
+            {
+                for (int i = 1; i <= floorWidth; i++)
+                {
+                    Instantiate(wallPrefab, new Vector3(roomWorldPos.x - halfWidth + i, 0f, roomWorldPos.y + halfHeight), Quaternion.identity, transform);
+                }
+            }
+            if (!room.HasNeighbor(Direction.Down))
+            {
+                for (int i = 1; i <= floorWidth; i++)
+                {
+                    Instantiate(wallPrefab, new Vector3(roomWorldPos.x - halfWidth + i, 0f, roomWorldPos.y - halfHeight), Quaternion.identity, transform);
+                }
+            }
+
+        }
+    }
+
+
+    private Vector2 GridToWorld(Vector2Int gridPos)
+    {
+        float x = gridPos.x * (floorWidth + roomBorder);
+        float y = gridPos.y * (floorHeight + roomBorder);
+        return new Vector2(x, y);  // Unity world coordinates
+    }
+
     public enum RoomType { Normal, Long, Big, LShaped }
-    public enum Direction { Up, Down, Left, Right }
 }

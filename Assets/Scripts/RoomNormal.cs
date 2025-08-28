@@ -6,6 +6,6 @@ public class RoomNormal : RoomBase
         : base(blockPrefab, parent, width, height) { }
     public override GameObject Generate(Vector2 offset)
     {
-        return GenerateRectangle(offset, "NormalRoom");
+        return GenerateRectangle(offset, "NormalRoom: " + GridPosition);
     }
 }
