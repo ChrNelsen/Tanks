@@ -417,7 +417,7 @@ MonoBehaviour:
   groundPrefab: {fileID: 6726310263378677370, guid: 16197e8100fc2854ba4a5b36d3dd97c2, type: 3}
   floorWidth: 23
   floorHeight: 15
-  roomBorder: 4
+  roomBorder: 8
   totalRooms: 8
   corridorWidth: 5
   roomPopulator: {fileID: 605204700}
@@ -613,7 +613,7 @@ Transform:
   m_GameObject: {fileID: 814164175}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 6, y: 1, z: 6}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -876,6 +876,7 @@ GameObject:
   - component: {fileID: 1917185004}
   - component: {fileID: 1917185003}
   - component: {fileID: 1917185002}
+  - component: {fileID: 1917185006}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -994,13 +995,34 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1917185001}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.30070576, y: 0, z: 0, w: 0.953717}
-  m_LocalPosition: {x: 0, y: 6.5, z: -10.75}
+  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
+  m_LocalPosition: {x: 0, y: 8, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 35, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
+--- !u!114 &1917185006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1917185001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42288cb9635465342a47687607938e00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 620859112}
+  yOffset: 8
+  zOffset: -10
+  followSpeed: 3
+  mouseInfluence: 0.15
+  roomMin: {x: -2, y: -11}
+  roomMax: {x: 2, y: -9.6}
+  borderPadding: 0
+  tiltAngle: 45
 --- !u!1001 &1964501984
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1068,6 +1090,14 @@ PrefabInstance:
     - target: {fileID: 5864308460761764515, guid: 346b8ea0baf58674683bfba1533681b8, type: 3}
       propertyPath: m_Name
       value: Tank
+      objectReference: {fileID: 0}
+    - target: {fileID: 6575532555270816348, guid: 346b8ea0baf58674683bfba1533681b8, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.532
+      objectReference: {fileID: 0}
+    - target: {fileID: 6575532555270816348, guid: 346b8ea0baf58674683bfba1533681b8, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1.092
       objectReference: {fileID: 0}
     - target: {fileID: 6933442206919625877, guid: 346b8ea0baf58674683bfba1533681b8, type: 3}
       propertyPath: m_Enabled
