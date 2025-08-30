@@ -32,10 +32,18 @@ public class Bullet : Projectile
         {
             Destroy(collision.gameObject);
             Destroy(gameObject);
+            return;
         }
 
-        // Bounce logic
         Vector3 normal = collision.GetContact(0).normal;
+
+        // Snap normal to clsest axis direction
+        if (Mathf.Abs(normal.x) > Mathf.Abs(normal.z))
+            normal = new Vector3(Mathf.Sign(normal.x), 0f, 0f);
+        else
+            normal = new Vector3(0f, 0f, Mathf.Sign(normal.z));
+
+        // Reflect bullet
         direction = Vector3.Reflect(direction, normal).normalized;
 
         bounceCount++;
@@ -45,7 +53,7 @@ public class Bullet : Projectile
         }
     }
 
-     // Future expansion for projectile abilities (piercing, freezing, etc.)
+    // Future expansion for projectile abilities (piercing, freezing, etc.)
     public override void OnHit(GameObject target)
     {
         return;
@@ -55,5 +63,5 @@ public class Bullet : Projectile
         {
             ability.OnHit(this, target);
         } */
-    } 
+    }
 }

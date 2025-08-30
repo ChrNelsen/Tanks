@@ -4,13 +4,14 @@ using System.Collections.Generic;
 public class LevelGenerator : MonoBehaviour
 {
     [Header("Room Settings")]
-    [SerializeField] private GameObject wallPrefab;     // Wall block prefab
-    [SerializeField] private GameObject groundPrefab;   // Floor block prefab
-    [SerializeField] private int floorWidth;            // Width of each room: X
-    [SerializeField] private int floorHeight;           // Height of each room: Z
-    [SerializeField] private int roomBorder = 1;        // Gap between rooms
-    [SerializeField] private int totalRooms;            // Total number of rooms
-    [SerializeField] private int corridorWidth = 1;     // Width of corridors
+    [SerializeField] private GameObject wallPrefab;         // Wall block prefab
+    [SerializeField] private GameObject groundPrefab;       // Floor block prefab
+    [SerializeField] private int floorWidth;                // Width of each room: X
+    [SerializeField] private int floorHeight;               // Height of each room: Z
+    [SerializeField] private int roomBorder = 1;            // Gap between rooms
+    [SerializeField] private int totalRooms;                // Total number of rooms
+    [SerializeField] private int corridorWidth = 1;         // Width of corridors
+    [SerializeField] private RoomPopulator roomPopulator;   // Room Populator Script
 
     // Graph of all spawned rooms (key = grid position)
     private Dictionary<Vector2Int, RoomBase> roomGraph = new Dictionary<Vector2Int, RoomBase>();
@@ -67,6 +68,9 @@ public class LevelGenerator : MonoBehaviour
             room.Generate(GridToWorld(position));
             room.SetGridPostion(position);
             roomGraph[position] = room;
+
+            // Populate Room with Objects
+            roomPopulator.PopulateRoom(room);
         }
         return room;
     }
@@ -200,6 +204,14 @@ public class LevelGenerator : MonoBehaviour
                     Instantiate(wallPrefab, new Vector3(roomWorldPos.x - halfWidth + i, 0f, roomWorldPos.y + halfHeight), Quaternion.identity, transform);
                 }
             }
+            else if (room.HasNeighbor(Direction.Up))
+            {
+                for (int i = 1; i <= halfWidth - halfCorridor - 1; i++)
+                {
+                    Instantiate(wallPrefab, new Vector3(roomWorldPos.x - halfWidth + i, 0f, roomWorldPos.y + halfHeight), Quaternion.identity, transform);
+                    Instantiate(wallPrefab, new Vector3(roomWorldPos.x + halfWidth - i, 0f, roomWorldPos.y + halfHeight), Quaternion.identity, transform);
+                }
+            }
             if (!room.HasNeighbor(Direction.Down))
             {
                 for (int i = 1; i <= floorWidth; i++)
@@ -207,10 +219,46 @@ public class LevelGenerator : MonoBehaviour
                     Instantiate(wallPrefab, new Vector3(roomWorldPos.x - halfWidth + i, 0f, roomWorldPos.y - halfHeight), Quaternion.identity, transform);
                 }
             }
-
+            else if (room.HasNeighbor(Direction.Down))
+            {
+                for (int i = 1; i <= halfWidth - halfCorridor - 1; i++)
+                {
+                    Instantiate(wallPrefab, new Vector3(roomWorldPos.x - halfWidth + i, 0f, roomWorldPos.y - halfHeight), Quaternion.identity, transform);
+                    Instantiate(wallPrefab, new Vector3(roomWorldPos.x + halfWidth - i, 0f, roomWorldPos.y - halfHeight), Quaternion.identity, transform);
+                }
+            }
+            if (!room.HasNeighbor(Direction.Left))
+            {
+                for (int i = 1; i <= floorHeight; i++)
+                {
+                    Instantiate(wallPrefab, new Vector3(roomWorldPos.x - halfWidth, 0f, roomWorldPos.y - halfHeight + i), Quaternion.identity, transform);
+                }
+            }
+            else if (room.HasNeighbor(Direction.Left))
+            {
+                for (int i = 1; i <= halfHeight - halfCorridor - 1; i++)
+                {
+                    Instantiate(wallPrefab, new Vector3(roomWorldPos.x - halfWidth, 0f, roomWorldPos.y - halfHeight + i), Quaternion.identity, transform);
+                    Instantiate(wallPrefab, new Vector3(roomWorldPos.x - halfWidth, 0f, roomWorldPos.y + halfHeight - i), Quaternion.identity, transform);
+                }
+            }
+            if (!room.HasNeighbor(Direction.Right))
+            {
+                for (int i = 1; i <= floorHeight; i++)
+                {
+                    Instantiate(wallPrefab, new Vector3(roomWorldPos.x + halfWidth, 0f, roomWorldPos.y - halfHeight + i), Quaternion.identity, transform);
+                }
+            }
+            else if (room.HasNeighbor(Direction.Right))
+            {
+                for (int i = 1; i <= halfHeight - halfCorridor - 1; i++)
+                {
+                    Instantiate(wallPrefab, new Vector3(roomWorldPos.x + halfWidth, 0f, roomWorldPos.y - halfHeight + i), Quaternion.identity, transform);
+                    Instantiate(wallPrefab, new Vector3(roomWorldPos.x + halfWidth, 0f, roomWorldPos.y + halfHeight - i), Quaternion.identity, transform);
+                }
+            }
         }
     }
-
 
     private Vector2 GridToWorld(Vector2Int gridPos)
     {
