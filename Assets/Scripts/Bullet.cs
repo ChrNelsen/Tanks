@@ -3,11 +3,11 @@ using UnityEngine;
 public class Bullet : Projectile
 {
     [SerializeField] int maxBounces = 3;
-    public float radius = 0.1f;  // radius of the "bullet"
+    [SerializeField] float radius = 0.1f;   // for SphereCast
+    [SerializeField] LayerMask collisionMask; // assign only walls here
 
     private int bounceCount = 0;
     private Vector3 direction;
-    public LayerMask collisionMask; // Assign your walls layer here
 
     public override void Launch(Vector3 dir)
     {
@@ -21,17 +21,6 @@ public class Bullet : Projectile
         // Check if we hit something this frame
         if (Physics.SphereCast(transform.position, radius, direction, out RaycastHit hit, distance, collisionMask))
         {
-            // Check if we hit player or another projectile
-            if (hit.collider.CompareTag("Player") || hit.collider.CompareTag("Projectile"))
-            {
-                Destroy(gameObject);
-                if(hit.collider.CompareTag("Projectile"))
-                {
-                    // Destroy the other projectile as well
-                    Destroy(hit.collider.gameObject);
-                }
-                return;
-            }
             // Reflect the direction based on surface normal
             direction = Vector3.Reflect(direction, hit.normal);
 
@@ -50,6 +39,22 @@ public class Bullet : Projectile
         {
             // Move normally if no hit
             transform.position += direction * distance;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Bullet hit: " + other.name);
+        // ✅ Handle gameplay hits separately from walls
+        if (other.CompareTag("Player"))
+        {
+            // Example: damage player here
+            Destroy(gameObject);
+        }
+        else if (other.CompareTag("Projectile"))
+        {
+            Destroy(other.gameObject);
+            Destroy(gameObject);
         }
     }
 
