@@ -3,53 +3,53 @@ using UnityEngine;
 public class Bullet : Projectile
 {
     [SerializeField] int maxBounces = 3;
+    public float radius = 0.1f;  // radius of the "bullet"
 
     private int bounceCount = 0;
     private Vector3 direction;
+    public LayerMask collisionMask; // Assign your walls layer here
 
     public override void Launch(Vector3 dir)
     {
-        dir.y = 0f; // Flatten direction to stay on fixed Y plane
         direction = dir.normalized;
     }
 
     private void Update()
     {
-        // Move bullet at constant speed
-        Vector3 movement = direction * speed * Time.deltaTime;
-        transform.position += movement;
+        float distance = speed * Time.deltaTime;
 
-        // Keep Y fixed
-        Vector3 pos = transform.position;
-        pos.y = fixedY;
-        transform.position = pos;
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        // Destroy both projectiles if they collide
-        if (collision.gameObject.tag == "Projectile")
+        // Check if we hit something this frame
+        if (Physics.SphereCast(transform.position, radius, direction, out RaycastHit hit, distance, collisionMask))
         {
-            Destroy(collision.gameObject);
-            Destroy(gameObject);
-            return;
+            // Check if we hit player or another projectile
+            if (hit.collider.CompareTag("Player") || hit.collider.CompareTag("Projectile"))
+            {
+                Destroy(gameObject);
+                if(hit.collider.CompareTag("Projectile"))
+                {
+                    // Destroy the other projectile as well
+                    Destroy(hit.collider.gameObject);
+                }
+                return;
+            }
+            // Reflect the direction based on surface normal
+            direction = Vector3.Reflect(direction, hit.normal);
+
+            // Move to the hit point so we don't overlap
+            transform.position += direction * radius;
+
+            // Count this bounce
+            bounceCount++;
+            if (bounceCount >= maxBounces)
+            {
+                Destroy(gameObject);
+                return;
+            }
         }
-
-        Vector3 normal = collision.GetContact(0).normal;
-
-        // Snap normal to clsest axis direction
-        if (Mathf.Abs(normal.x) > Mathf.Abs(normal.z))
-            normal = new Vector3(Mathf.Sign(normal.x), 0f, 0f);
         else
-            normal = new Vector3(0f, 0f, Mathf.Sign(normal.z));
-
-        // Reflect bullet
-        direction = Vector3.Reflect(direction, normal).normalized;
-
-        bounceCount++;
-        if (bounceCount > maxBounces)
         {
-            Destroy(gameObject);
+            // Move normally if no hit
+            transform.position += direction * distance;
         }
     }
 
@@ -62,6 +62,7 @@ public class Bullet : Projectile
         foreach (var ability in GetComponents<IProjectileAbility>())
         {
             ability.OnHit(this, target);
-        } */
+        }
+        */
     }
 }
