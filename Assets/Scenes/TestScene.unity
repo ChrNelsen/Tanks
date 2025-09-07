@@ -195,7 +195,10 @@ PrefabInstance:
       addedObject: {fileID: 567321751}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 44decf82f1989f34892c53f8544c3b6c, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 567321750}
+      addedObject: {fileID: 567321755}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 44decf82f1989f34892c53f8544c3b6c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 567321754}
   m_SourcePrefab: {fileID: 100100000, guid: 44decf82f1989f34892c53f8544c3b6c, type: 3}
 --- !u!1 &236380538
 GameObject:
@@ -513,21 +516,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 44decf82f1989f34892c53f8544c3b6c, type: 3}
   m_PrefabInstance: {fileID: 197026646}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &567321750
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 567321746}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 09423cc22dfb0494d8e9e78be2e41c8d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  firePoint: {fileID: 1678339389}
-  projectilePrefab: {fileID: 6263878439862965748, guid: 44d5b0b3ab7a2604ea0b2157b87a63ac, type: 3}
-  muzzleFlashEffect: {fileID: 3122342979815984018, guid: 52a99c62681a97d4381f094d8d1a3b38, type: 3}
 --- !u!114 &567321751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -544,6 +532,35 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   rotationSpeed: 10
+--- !u!114 &567321754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 567321746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfe04e02ac17138459cf4b731970ac20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletPrefab: {fileID: 6263878439862965748, guid: 44d5b0b3ab7a2604ea0b2157b87a63ac, type: 3}
+  firePoint: {fileID: 1678339389}
+  fireRate: 0
+--- !u!114 &567321755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 567321746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eafea5ced5651b41a5c62be6d2c3bd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firePoint: {fileID: 1678339389}
+  weaponController: {fileID: 567321754}
 --- !u!4 &574732071 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: e0ee8420ce52505488b36d1eed9f55bc, type: 3}
@@ -626,8 +643,9 @@ GameObject:
   m_Component:
   - component: {fileID: 634708207}
   - component: {fileID: 634708210}
-  - component: {fileID: 634708209}
   - component: {fileID: 634708208}
+  - component: {fileID: 634708211}
+  - component: {fileID: 634708212}
   m_Layer: 9
   m_Name: Tank (1)
   m_TagString: Player
@@ -675,20 +693,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &634708209
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 634708206}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e510cab7487c8f7489ad3457065445bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 2
-  rotateSpeed: 150
 --- !u!54 &634708210
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -716,6 +720,36 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 84
   m_CollisionDetection: 0
+--- !u!114 &634708211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 634708206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 472c85d198087b2438efd645b74d6eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 1
+  moveSpeed: 2
+  maxBullets: 3
+  bulletBounce: 1
+  explosionEffect: {fileID: 4285587625605181378, guid: 1dba8a2e7ae7bd24e89de05c9da4ccdc, type: 3}
+--- !u!114 &634708212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 634708206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0a0cd63beb58af4995f0e74c339178e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotateSpeed: 120
 --- !u!1001 &698644665
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1117,7 +1151,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8096526481717969408, guid: e2123ce110c8133419b87f8ebc5a30bd, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.13
+      value: -0.14300002
       objectReference: {fileID: 0}
     - target: {fileID: 8096526481717969408, guid: e2123ce110c8133419b87f8ebc5a30bd, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1174,7 +1208,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8096526481717969408, guid: e2123ce110c8133419b87f8ebc5a30bd, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.152
+      value: -0.165
       objectReference: {fileID: 0}
     - target: {fileID: 8096526481717969408, guid: e2123ce110c8133419b87f8ebc5a30bd, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1249,7 +1283,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explodeAfterSeconds: 5
   explosionRadius: 5
-  explosionEffect: {fileID: 0}
+  explosionEffect: {fileID: 4285587625605181378, guid: 1dba8a2e7ae7bd24e89de05c9da4ccdc, type: 3}
 --- !u!1 &1678339388
 GameObject:
   m_ObjectHideFlags: 0
@@ -1568,7 +1602,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8096526481717969408, guid: e2123ce110c8133419b87f8ebc5a30bd, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.13
+      value: -0.14300002
       objectReference: {fileID: 0}
     - target: {fileID: 8096526481717969408, guid: e2123ce110c8133419b87f8ebc5a30bd, type: 3}
       propertyPath: m_LocalPosition.z

@@ -7,7 +7,9 @@ public class WeaponController : MonoBehaviour
     public Transform firePoint;
     public float fireRate = 1f;
 
-    private float fireTimer;
+    private float fireTimer = 0f;
+
+    
 
     public void TryShoot()
     {
