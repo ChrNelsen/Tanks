@@ -6,6 +6,7 @@ public class Bullet : Projectile
     [SerializeField] float radius = 0.1f;   // for SphereCast
     [SerializeField] LayerMask collisionMask; // assign only walls here
 
+
     private int bounceCount = 0;
     private Vector3 direction;
 
@@ -21,6 +22,7 @@ public class Bullet : Projectile
         // Check if we hit something this frame
         if (Physics.SphereCast(transform.position, radius, direction, out RaycastHit hit, distance, collisionMask))
         {
+            Instantiate(explosionEffect, transform.position, Quaternion.identity, transform);
             // Reflect the direction based on surface normal
             direction = Vector3.Reflect(direction, hit.normal);
 
@@ -39,22 +41,6 @@ public class Bullet : Projectile
         {
             // Move normally if no hit
             transform.position += direction * distance;
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        Debug.Log("Bullet hit: " + other.name);
-        // ✅ Handle gameplay hits separately from walls
-        if (other.CompareTag("Player"))
-        {
-            // Example: damage player here
-            Destroy(gameObject);
-        }
-        else if (other.CompareTag("Projectile"))
-        {
-            Destroy(other.gameObject);
-            Destroy(gameObject);
         }
     }
 
