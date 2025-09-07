@@ -13,7 +13,7 @@ public class PlayerTurret : MonoBehaviour
         // Fire bullet when left mouse button is clicked
         if (Input.GetMouseButtonDown(0))
         {
-            weaponController.TryShoot();
+            weaponController.Fire();
         }
     }
 

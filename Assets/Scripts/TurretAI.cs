@@ -63,7 +63,7 @@ public class TurretAI : MonoBehaviour
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, scanSpeed * Time.deltaTime);
         }
 
-        weapon.TryShoot();
+        weapon.Fire();
     }
 }
 
