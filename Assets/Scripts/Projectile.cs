@@ -5,6 +5,7 @@ public abstract class Projectile : MonoBehaviour
     public float fixedY;
     public float speed;
     public GameObject explosionEffect;
+    public System.Action OnDestroyed; // <-- add this
 
     void Start()
     {
@@ -42,5 +43,11 @@ public abstract class Projectile : MonoBehaviour
         {
             Instantiate(explosionEffect, transform.position, Quaternion.identity);
         }
+    }
+
+    private void OnDestroy()
+    {
+        PlayExplosion();
+        OnDestroyed?.Invoke();
     }
 }

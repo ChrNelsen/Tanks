@@ -175,7 +175,7 @@ MonoBehaviour:
   pulseSpeed: 0.25
   minIntensity: 1
   maxIntensity: 2
-  materialIndex: 1
+  materialIndex: 0
 --- !u!1001 &6756217812900275721
 PrefabInstance:
   m_ObjectHideFlags: 0

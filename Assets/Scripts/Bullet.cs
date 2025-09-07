@@ -2,10 +2,9 @@ using UnityEngine;
 
 public class Bullet : Projectile
 {
-    [SerializeField] int maxBounces = 3;
-    [SerializeField] float radius = 0.1f;   // for SphereCast
-    [SerializeField] LayerMask collisionMask; // assign only walls here
-
+    [SerializeField] int maxBounces = 3;        // Default but overriddent at runtime
+    [SerializeField] float radius = 0.1f;       // for SphereCast
+    [SerializeField] LayerMask collisionMask;   // Only Walls
 
     private int bounceCount = 0;
     private Vector3 direction;
@@ -55,5 +54,10 @@ public class Bullet : Projectile
             ability.OnHit(this, target);
         }
         */
+    }
+
+    public void SetMaxBounces(int bounces)
+    {
+        maxBounces = bounces;
     }
 }
