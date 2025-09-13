@@ -63,5 +63,27 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2c26742f9bd4fde4c9092da7dd4529cd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8306888183815225035}
   m_SourcePrefab: {fileID: 100100000, guid: 2c26742f9bd4fde4c9092da7dd4529cd, type: 3}
+--- !u!1 &6726310263378677370 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 2c26742f9bd4fde4c9092da7dd4529cd, type: 3}
+  m_PrefabInstance: {fileID: 5879957691325821739}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8306888183815225035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6726310263378677370}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8b98de001a34f2498856e7f2f609fc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dissolveMaterialTemplate: {fileID: 2100000, guid: ee3ccfb6f23bf024f853aeac73544843, type: 2}
+  dissolveDuration: 5

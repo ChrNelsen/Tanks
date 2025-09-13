@@ -25,6 +25,7 @@ public class Mine : MonoBehaviour
 
     void Explode()
     {
+        if (exploded) return;
         exploded = true;
 
         // Optional: show explosion effect
@@ -33,7 +34,25 @@ public class Mine : MonoBehaviour
             Instantiate(explosionEffect, transform.position, Quaternion.identity);
         }
 
+        // Spawn "explosion sphere" and detect breakables
+        Collider[] hits = Physics.OverlapSphere(transform.position, explosionRadius);
+
+        foreach (Collider hit in hits)
+        {
+            if (hit.CompareTag("Breakable"))
+            {
+                Destroy(hit.gameObject);
+            }
+        }
+
         // Destroy the mine object
         Destroy(gameObject);
+    }
+
+    // Optional: Draw explosion radius in Scene view
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, explosionRadius);
     }
 }
