@@ -25,30 +25,33 @@ Material:
   m_Parent: {fileID: 2100000, guid: c5706602ccd904445a05cc1a352c71ad, type: 2}
   m_ModifiedSerializedProperties: 16
   m_ValidKeywords:
-  - _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+  - _ALPHAPREMULTIPLY_ON
+  - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
+  m_CustomRenderQueue: 3000
   stringTagMap:
-    RenderType: Opaque
+    RenderType: Transparent
   disabledShaderPasses:
   - MOTIONVECTORS
+  - DepthOnly
+  - SHADOWCASTER
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _DstBlend: 0
-    - _DstBlendAlpha: 0
+    - _DstBlend: 10
+    - _DstBlendAlpha: 10
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
-    - _Surface: 0
-    - _ZWrite: 1
+    - _Surface: 1
+    - _ZWrite: 0
     m_Colors:
-    - _BaseColor: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 1}
-    - _Color: {r: 0.21960783, g: 0.21960783, b: 0.21960783, a: 1}
+    - _BaseColor: {r: 0.3490566, g: 0.3490566, b: 0.3490566, a: 1}
+    - _Color: {r: 0.34905657, g: 0.34905657, b: 0.34905657, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

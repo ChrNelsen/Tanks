@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca0890d019a719b4e8d2c534326d86c6, type: 3}
-  m_Name: Room_Normal_1
+  m_Name: Room_Normal_01
   m_EditorClassIdentifier: 
   prefab: {fileID: 3728874069372060025, guid: cc456dfbe27f5b945936fe0801650f63, type: 3}
   difficulty: 1

@@ -29,7 +29,9 @@ public class TankMovement : MonoBehaviour
             transform.position + Vector3.up * 1f,
             0.5f,
             moveDirection.normalized,
-            moveDirection.magnitude
+            moveDirection.magnitude,
+            Physics.DefaultRaycastLayers,
+            QueryTriggerInteraction.Ignore   // <-- ignore trigger colliders
         );
 
         if (!isBlocked)

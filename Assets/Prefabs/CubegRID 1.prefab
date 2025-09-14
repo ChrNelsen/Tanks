@@ -67,6 +67,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2c26742f9bd4fde4c9092da7dd4529cd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8306888183815225035}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2c26742f9bd4fde4c9092da7dd4529cd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6222826992111235213}
   m_SourcePrefab: {fileID: 100100000, guid: 2c26742f9bd4fde4c9092da7dd4529cd, type: 3}
 --- !u!1 &6726310263378677370 stripped
 GameObject:
@@ -80,10 +83,31 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6726310263378677370}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b8b98de001a34f2498856e7f2f609fc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   dissolveMaterialTemplate: {fileID: 2100000, guid: ee3ccfb6f23bf024f853aeac73544843, type: 2}
   dissolveDuration: 5
+--- !u!114 &6222826992111235213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6726310263378677370}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b362e458f4cb1f84d9d8e4e31befa5f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minDelay: 0
+  maxDelay: 2
+  fadeDuration: 2
+  pulsate: 0
+  pulseSpeed: 2
+  minIntensity: 0.1
+  maxIntensity: 2
+  emissionColor: {r: 1, g: 1, b: 1, a: 1}
+  materialIndex: 0

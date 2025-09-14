@@ -40,8 +40,6 @@ public class LevelGenerator : MonoBehaviour
         }
         ConnectAllRooms();
         AddBordersToAllRooms();
-
-
     }
 
     private void SpawnNextRoom()
@@ -95,57 +93,16 @@ public class LevelGenerator : MonoBehaviour
 
     private void ConnectRooms(Vector2 from, Vector2 to)
     {
+        Corridor corridor = new Corridor(groundPrefab, wallPrefab, floorWidth, floorHeight, corridorWidth, transform);
+        corridor.Generate(from, to);
+        
         float halfWidth = (floorWidth - 1) / 2f + 1;
         float halfHeight = (floorHeight - 1) / 2f + 1; // 15 -> 8
         float halfCorridor = (corridorWidth - 1) / 2f + 1;  //5 -> 3
 
-        // Horizontal corridor (same Y)
-        if (from.y == to.y)
-        {
-            float startX = Mathf.Min(from.x, to.x) + halfWidth;
-            float endX = Mathf.Max(from.x, to.x) - halfWidth;
-
-            for (float x = startX; x <= endX; x++)
-            {
-                // Center ground
-                Instantiate(groundPrefab, new Vector3(x, -1f, from.y), Quaternion.identity, transform);
-
-                // Corridor width
-                for (int w = 1; w <= (corridorWidth - 1) / 2; w++)
-                {
-                    Instantiate(groundPrefab, new Vector3(x, -1f, from.y + w), Quaternion.identity, transform);
-                    Instantiate(groundPrefab, new Vector3(x, -1f, from.y - w), Quaternion.identity, transform);
-                }
-
-                // Corridor borders
-                Instantiate(wallPrefab, new Vector3(x, 0f, from.y + halfCorridor), Quaternion.identity, transform);
-                Instantiate(wallPrefab, new Vector3(x, 0f, from.y - halfCorridor), Quaternion.identity, transform);
-            }
-        }
-
-        // Vertical corridor (same X)
-        else if (from.x == to.x)
-        {
-            float startY = from.y < to.y ? from.y + halfHeight : to.y + halfHeight;
-            float endY = from.y < to.y ? to.y - halfHeight : from.y - halfHeight;
-
-            for (float y = startY; y <= endY; y++)
-            {
-                // Center ground
-                Instantiate(groundPrefab, new Vector3(from.x, -1f, y), Quaternion.identity, transform);
-
-                // Corridor width
-                for (int w = 1; w <= (corridorWidth - 1) / 2; w++)
-                {
-                    Instantiate(groundPrefab, new Vector3(from.x + w, -1f, y), Quaternion.identity, transform);
-                    Instantiate(groundPrefab, new Vector3(from.x - w, -1f, y), Quaternion.identity, transform);
-                }
-
-                // Corridor borders
-                Instantiate(wallPrefab, new Vector3(from.x + halfCorridor, 0f, y), Quaternion.identity, transform);
-                Instantiate(wallPrefab, new Vector3(from.x - halfCorridor, 0f, y), Quaternion.identity, transform);
-            }
-        }
+        // Create a parent object for this corridor
+        GameObject corridorParent = new GameObject("Corridor");
+        corridorParent.transform.parent = transform; // optional: under LevelGenerator
     }
 
     private void ConnectAllRooms()

@@ -39,6 +39,8 @@ public class PulsatingEmission : MonoBehaviour
 
     private void Update()
     {
+        if (!rend.enabled || !rend.isVisible) return; // wait until rendered
+
         float pulse = (Mathf.Sin(Time.time * pulseSpeed) + 1f) * 0.5f; // Normalize to 0-1
         float intensity = Mathf.Lerp(minIntensity, maxIntensity, pulse);
 

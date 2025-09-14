@@ -51,14 +51,14 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 1e036d71a3adc454c81ab2a5f35ff726, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 3b1ccca71b3f2c24e904f980740a0ae3, type: 2}
+      objectReference: {fileID: 2100000, guid: c5706602ccd904445a05cc1a352c71ad, type: 2}
     - target: {fileID: -7511558181221131132, guid: 1e036d71a3adc454c81ab2a5f35ff726, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: 6a4002174c024ce42a539571d94985c2, type: 2}
     - target: {fileID: 919132149155446097, guid: 1e036d71a3adc454c81ab2a5f35ff726, type: 3}
       propertyPath: m_Name
-      value: Cube Light Blue
+      value: Cube Light Blue 2
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 1e036d71a3adc454c81ab2a5f35ff726, type: 3}
       propertyPath: m_Layer
@@ -133,9 +133,3 @@ MonoBehaviour:
   minDelay: 1
   maxDelay: 3
   fadeDuration: 2
-  pulsate: 0
-  pulseSpeed: 2
-  minIntensity: 0.1
-  maxIntensity: 2
-  emissionColor: {r: 1, g: 1, b: 1, a: 1}
-  materialIndex: 0

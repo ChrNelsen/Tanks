@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class MouseFollowCamera : MonoBehaviour
 {
@@ -13,17 +14,24 @@ public class MouseFollowCamera : MonoBehaviour
     public float tiltAngle = 45f;         // Fixed top-down tilt
 
     private Quaternion fixedRotation;
+    private bool isMovingToRoom;
+    private Vector2 roomCenter = new Vector2(0, 0);
+
+    // Cached clamp values
+    private float minX, maxX, minZ, maxZ;
 
     void Start()
     {
         // Set rotation once and keep it fixed
         fixedRotation = Quaternion.Euler(tiltAngle, 0, 0);
         transform.rotation = fixedRotation;
+        UpdateClampValues(); // Precompute clamp limits
     }
 
     void LateUpdate()
     {
         if (!player) return;
+        if (isMovingToRoom) return;
 
         // Base camera position behind player
         Vector3 basePos = player.position + new Vector3(0, yOffset, zOffset);
@@ -40,19 +48,55 @@ public class MouseFollowCamera : MonoBehaviour
         // Apply offset
         Vector3 desiredPos = basePos + new Vector3(offset.x, 0, offset.z);
 
-        // Clamp to room bounds
-        float minX = roomMin.x + borderPadding;
-        float maxX = roomMax.x - borderPadding;
-        float minZ = roomMin.y + borderPadding;
-        float maxZ = roomMax.y - borderPadding;
-
-        desiredPos.x = Mathf.Clamp(desiredPos.x, minX, maxX);
-        desiredPos.z = Mathf.Clamp(desiredPos.z, minZ, maxZ);
+        // Clamp to the room as long as camera is not shifting to a new one
+        if (!isMovingToRoom)
+        {
+            desiredPos.x = Mathf.Clamp(desiredPos.x, minX, maxX);
+            desiredPos.z = Mathf.Clamp(desiredPos.z, minZ, maxZ);
+        }
 
         // Smoothly move camera
         transform.position = Vector3.Lerp(transform.position, desiredPos, followSpeed * Time.deltaTime);
 
         // Keep rotation fixed
         transform.rotation = fixedRotation;
+    }
+
+    private void UpdateClampValues()
+    {
+        minX = roomMin.x + roomCenter.x + borderPadding;
+        maxX = roomMax.x + roomCenter.x - borderPadding;
+        minZ = roomMin.y + roomCenter.y + borderPadding;
+        maxZ = roomMax.y + roomCenter.y - borderPadding;
+    }
+
+    public void MoveToRoom(Vector2 center)
+    {
+        // Update our currenct roomCenter
+        roomCenter = center;
+        Vector3 targetPosition = new Vector3(center.x, player.position.y + yOffset, center.y + zOffset);
+        StopAllCoroutines();
+        StartCoroutine(MoveCameraCoroutine(targetPosition));
+    }
+
+    private IEnumerator MoveCameraCoroutine(Vector3 targetPos)
+    {
+        isMovingToRoom = true; // Disable clamping
+        UpdateClampValues();
+
+        float duration = 5f;
+        Vector3 startPos = transform.position;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0, 1, elapsed / duration);
+            transform.position = Vector3.Lerp(startPos, targetPos, t);
+            yield return null;
+        }
+
+        transform.position = targetPos;
+        isMovingToRoom = false; // Re-enable clamping
     }
 }
