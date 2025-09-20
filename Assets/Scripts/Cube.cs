@@ -1,5 +1,4 @@
 using System.Collections;
-using NUnit.Framework;
 using UnityEngine;
 
 public class Cube : MonoBehaviour
@@ -16,6 +15,9 @@ public class Cube : MonoBehaviour
 
     [Tooltip("Material slot to apply the pulsating emission.")]
     [SerializeField] int materialIndex = 0; // safer default
+
+    [Header("Variance Controls")]
+    [SerializeField, Range(0f, 1f)] float colorVariance = 0f;     // how far hue/sat/val can shift
 
     private Renderer cubeRenderer;
     private Material[] materials;
@@ -84,7 +86,6 @@ public class Cube : MonoBehaviour
                     materials[i].SetColor("_EmissionColor", baseEmissions[i] * t);
                 }
             }
-
             yield return null;
         }
 
@@ -108,6 +109,7 @@ public class Cube : MonoBehaviour
             }
         }
         hasFadedIn = true;
+        // ApplyVariance();  // Needs to be put in correct spot
     }
 
     private void Update()
@@ -119,6 +121,32 @@ public class Cube : MonoBehaviour
 
             Color finalColor = emissionColor * intensity;
             materials[materialIndex].SetColor("_EmissionColor", finalColor);
+        }
+    }
+
+    private void ApplyVariance()
+    {
+        int matIndex = 0;
+
+        foreach (Color material in baseColors)
+        {
+            // Convert to HSV
+            Color.RGBToHSV(material, out float h, out float s, out float v);
+
+            // Apply random shifts in given ranges
+            // Need to double check what this is doing, also decide if I just want difference in
+            // shade vs color
+            h = Mathf.Repeat(h + Random.Range(-colorVariance, colorVariance), 1f);
+            s = Mathf.Clamp01(s + Random.Range(-colorVariance, colorVariance));
+            v = Mathf.Clamp01(v + Random.Range(-colorVariance, colorVariance));
+
+            // Convert back to RGB
+            Color variedColor = Color.HSVToRGB(h, s, v);
+
+            // Apply to material
+            cubeRenderer.materials[matIndex].color = variedColor;
+
+            matIndex++;
         }
     }
 }
