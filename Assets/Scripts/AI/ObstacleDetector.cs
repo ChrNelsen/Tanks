@@ -46,4 +46,3 @@ public class ObstacleDetector : MonoBehaviour
         Gizmos.DrawRay(transform.position, Quaternion.Euler(0, -outsideProbeAngle, 0) * transform.forward * outSideProbesRayDistance);
     }
 }
-

@@ -1,36 +1,53 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyRotationController : MonoBehaviour
 {
-    private float rotateSpeed = 120f;
+    [SerializeField] private float rotateSpeed = 120f;
+
     private Rigidbody rb;
     private bool rotating;
     private float remainingRotation;
     private int rotationDirection; // 1 = clockwise, -1 = counterclockwise
-    private int desiredTurnDir;
+    private int desiredTurnDir; // +1 = right, -1 = left
 
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody>();
-    }
+    private void Awake() => rb = GetComponent<Rigidbody>();
 
-    // Rotates toward a given target angle (world Y rotation) smoothly.
+    #region Rotation Methods
+
+    // Rotate smoothly toward a world Y angle
     public void RotateTowardsAngle(float targetY)
     {
         float currentY = rb.rotation.eulerAngles.y;
-        float diff = Mathf.DeltaAngle(currentY, targetY); // shortest signed angle
+        float diff = Mathf.DeltaAngle(currentY, targetY);
 
         if (Mathf.Abs(diff) < 0.01f) return;
 
-        // Update disired Turn Direction while doing this
-        desiredTurnDir = diff > 0 ? 1 : -1; // +1 right, -1 left
-        remainingRotation = Mathf.Abs(diff);
-        rotationDirection = diff > 0 ? 1 : -1;
-        rotating = true;
+        StartRotation(diff);
     }
 
-    /// Rotates a bit each FixedUpdate until done.
+    // Rotate toward a target position, respecting obstacles
+    public void RotateTowardsTarget(Vector3 target, bool blockedRight, bool blockedLeft)
+    {
+        Vector3 direction = target - transform.position;
+        direction.y = 0f;
+        if (direction.sqrMagnitude < 0.0001f) return;
+
+        float angle = Vector3.SignedAngle(transform.forward, direction.normalized, Vector3.up);
+        int turnDir = angle > 0 ? 1 : -1;
+
+        // Stop if blocked or already facing target
+        if ((turnDir == 1 && blockedRight) || (turnDir == -1 && blockedLeft) || Mathf.Abs(angle) < 1f) return;
+
+        float step = Mathf.Clamp(angle, -rotateSpeed * Time.fixedDeltaTime, rotateSpeed * Time.fixedDeltaTime);
+        rb.MoveRotation(rb.rotation * Quaternion.Euler(0f, step, 0f));
+
+        desiredTurnDir = turnDir;
+    }
+
+    // Rotate by a fixed amount relative to current rotation
+    public void RotateByRelative(float degrees) => RotateTowardsAngle(rb.rotation.eulerAngles.y + degrees);
+
+    // Step rotation each FixedUpdate if currently rotating
     public void HandleRotationStep()
     {
         if (!rotating) return;
@@ -43,48 +60,21 @@ public class EnemyRotationController : MonoBehaviour
             rotating = false;
     }
 
-    public void RotateTowardsTarget(Vector3 target, bool blockedOnRight, bool blockedOnLeft)
+    #endregion
+
+    #region Helpers
+
+    private void StartRotation(float angle)
     {
-        // Direction to target
-        Vector3 direction = (target - transform.position).normalized;
-        direction.y = 0f;
-
-        if (direction.sqrMagnitude < 0.0001f) return;
-
-        // Angle to target
-        float angleToTarget = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
-        int dir = Mathf.Abs(angleToTarget) < 1f ? 0 : (angleToTarget > 0 ? 1 : -1);
-
-        // Don't rotate if blocked
-        if ((dir == 1 && blockedOnRight) || (dir == -1 && blockedOnLeft) || dir == 0) return;
-
-        // Clamp rotation step
-        float step = Mathf.Clamp(angleToTarget, -rotateSpeed * Time.fixedDeltaTime, rotateSpeed * Time.fixedDeltaTime);
-        rb.MoveRotation(rb.rotation * Quaternion.Euler(0f, step, 0f));
+        rotationDirection = angle > 0 ? 1 : -1;
+        desiredTurnDir = rotationDirection;
+        remainingRotation = Mathf.Abs(angle);
+        rotating = true;
     }
 
+    public bool IsRotating() => rotating;
 
-    // Rotate by a fixed amount (e.g., 90 degrees) or to nearest allowed angle.
-    public void RotateByRelative(float degrees)
-    {
-        float targetY = rb.rotation.eulerAngles.y + degrees;
-        RotateTowardsAngle(targetY);
-    }
+    public int GetDesiredTurnDir() => desiredTurnDir;
 
-    public bool IsRotating()
-    {
-        if (rotating)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public int GetDesiredTurnDir()
-    {
-        return desiredTurnDir;
-    }
+    #endregion
 }
