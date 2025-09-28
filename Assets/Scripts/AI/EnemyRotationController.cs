@@ -38,10 +38,8 @@ public class EnemyRotationController : MonoBehaviour
         // Stop if blocked or already facing target
         if ((turnDir == 1 && blockedRight) || (turnDir == -1 && blockedLeft) || Mathf.Abs(angle) < 1f) return;
 
-        float step = Mathf.Clamp(angle, -rotateSpeed * Time.fixedDeltaTime, rotateSpeed * Time.fixedDeltaTime);
-        rb.MoveRotation(rb.rotation * Quaternion.Euler(0f, step, 0f));
-
-        desiredTurnDir = turnDir;
+        // Smoothly rotate using the same step logic
+        StartRotation(angle);
     }
 
     // Rotate by a fixed amount relative to current rotation

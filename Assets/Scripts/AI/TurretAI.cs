@@ -16,7 +16,8 @@ public class TurretAI : MonoBehaviour
 
     void Start()
     {
-        startAngle = transform.eulerAngles.y;
+        // Use local Y rotation relative to parent
+        startAngle = transform.localEulerAngles.y;
         targeting = GetComponent<TargetingSystem>();
         weapon = GetComponent<WeaponController>();
     }
@@ -42,11 +43,37 @@ public class TurretAI : MonoBehaviour
 
     void Scan()
     {
-        float angle = transform.eulerAngles.y + scanDirection * scanSpeed * Time.deltaTime;
+        float currentAngle = transform.localEulerAngles.y;
+        float delta = Mathf.DeltaAngle(currentAngle, startAngle);
+
+        if (Mathf.Abs(delta) <= scanAngle)
+        {
+            ScanBackAndForth();
+        }
+        else
+        {
+            ReturnToScanningPosition();
+        }
+    }
+
+    void ScanBackAndForth()
+    {
+        float angle = transform.localEulerAngles.y + scanDirection * scanSpeed * Time.deltaTime;
         if (Mathf.Abs(Mathf.DeltaAngle(angle, startAngle)) > scanAngle)
             scanDirection *= -1;
 
-        transform.rotation = Quaternion.Euler(0, angle, 0);
+        transform.localRotation = Quaternion.Euler(0, angle, 0);
+    }
+
+    void ReturnToScanningPosition()
+    {
+        float currentAngle = transform.localEulerAngles.y;
+        float step = scanSpeed * Time.deltaTime;
+        float newAngle = Mathf.MoveTowardsAngle(currentAngle, startAngle, step);
+        transform.localRotation = Quaternion.Euler(0, newAngle, 0);
+
+        if (Mathf.Abs(Mathf.DeltaAngle(newAngle, startAngle)) < 0.1f)
+            scanDirection = 1;
     }
 
     void TrackAndShoot()

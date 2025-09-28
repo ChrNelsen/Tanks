@@ -28,6 +28,14 @@ public class Bullet : Projectile
             // Move to the hit point so we don't overlap
             transform.position += direction * radius;
 
+            // Check if the hit object has FlashOnCollision
+            FlashOnCollision flash = hit.collider.GetComponent<FlashOnCollision>();
+            if (flash != null)
+            {
+                Debug.Log("Flashing on collision");
+                flash.Flash(); // Call flash
+            }
+
             // Count this bounce
             bounceCount++;
             if (bounceCount >= maxBounces)
