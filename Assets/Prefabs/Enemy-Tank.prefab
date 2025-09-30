@@ -172,7 +172,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb99707aa3af54a4083caaac28f597ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  minDistance: 5
+  maxDistance: 15
+  candidateRadius: 5
+  numCandidatePositions: 12
+  refreshInterval: 7
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 64
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 1152
 --- !u!114 &3825321753466051647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,7 +201,7 @@ MonoBehaviour:
   outsideProbeAngle: 60
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 640
+    m_Bits: 1664
 --- !u!114 &1061878689161901781
 MonoBehaviour:
   m_ObjectHideFlags: 0

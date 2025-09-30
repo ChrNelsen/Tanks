@@ -464,7 +464,7 @@ MonoBehaviour:
   floorWidth: 23
   floorHeight: 15
   roomBorder: 8
-  totalRooms: 3
+  totalRooms: 1
   corridorWidth: 5
   roomPopulator: {fileID: 605204700}
 --- !u!114 &605204700
@@ -538,7 +538,7 @@ BoxCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -587,7 +587,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   moveSpeed: 2
-  maxBullets: 5
+  maxBullets: 1
   bulletBounce: 1
   explosionEffect: {fileID: 4285587625605181378, guid: 1dba8a2e7ae7bd24e89de05c9da4ccdc, type: 3}
 --- !u!114 &634708212
@@ -685,9 +685,9 @@ GameObject:
   - component: {fileID: 814164177}
   - component: {fileID: 814164176}
   - component: {fileID: 814164180}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Plane
-  m_TagString: Ground
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
