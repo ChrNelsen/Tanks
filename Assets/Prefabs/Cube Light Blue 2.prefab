@@ -133,3 +133,8 @@ MonoBehaviour:
   minDelay: 1
   maxDelay: 3
   fadeDuration: 2
+  pulsate: 0
+  pulseSpeed: 2
+  minIntensity: 0.1
+  maxIntensity: 2
+  materialIndex: 0
