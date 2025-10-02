@@ -124,5 +124,5 @@ MonoBehaviour:
   pulseSpeed: 2
   minIntensity: 0.1
   maxIntensity: 2
-  emissionColor: {r: 1, g: 1, b: 1, a: 1}
   materialIndex: 0
+  colorVariance: 0.05
