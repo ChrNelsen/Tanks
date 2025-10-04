@@ -464,7 +464,7 @@ MonoBehaviour:
   floorWidth: 23
   floorHeight: 15
   roomBorder: 8
-  totalRooms: 1
+  totalRooms: 2
   corridorWidth: 5
   roomPopulator: {fileID: 605204700}
 --- !u!114 &605204700
@@ -483,6 +483,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fcf693203cd2d6444b9951e99779ec47, type: 2}
   - {fileID: 11400000, guid: cd52653fc2985d54fbcfd01c49f34055, type: 2}
   - {fileID: 11400000, guid: 76bcaad56e562af4baff1d7910c393b6, type: 2}
+  - {fileID: 11400000, guid: 4cf51eaaf071f2041b5dc350086c2f2f, type: 2}
   enemyPrefabs:
   - {fileID: 3743613186441788600, guid: e2123ce110c8133419b87f8ebc5a30bd, type: 3}
   - {fileID: 5558337222535207489, guid: 24f516349a5f607438f9253ab353606d, type: 3}
@@ -585,7 +586,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 472c85d198087b2438efd645b74d6eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 1
   moveSpeed: 2
   maxBullets: 1
   bulletBounce: 1

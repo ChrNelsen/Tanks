@@ -5,13 +5,9 @@ using System.Collections.Generic;
 [RequireComponent(typeof(VehicleBase))]
 [RequireComponent(typeof(ObstacleDetector))]
 [RequireComponent(typeof(EnemyRotationController))]
+[RequireComponent(typeof(CandidatePositionManager))]
 public class EnemyMovement : MonoBehaviour
 {
-    [Header("Distance Settings")]
-    [SerializeField] private float minDistance = 5f, maxDistance = 15f;
-    [Header("Candidate Settings")]
-    [SerializeField] private float candidateRadius = 5f;
-    [SerializeField] private int numCandidatePositions = 12;
     [Header("Environment")]
     [SerializeField] private LayerMask groundMask, wallMask;
     [Header("Peek Settings")]
@@ -33,8 +29,7 @@ public class EnemyMovement : MonoBehaviour
 
     private bool isPeeking, canMove = true;
     private float peekTimer, peekDuration, lostSightTimer;
-    private Vector3 lastKnownPlayerPos, CurrentTarget;
-    private List<CandidatePosition> candidatePositions = new();
+    private Vector3 lastKnownPlayerPos, currentTarget;
 
     private bool IsSearching => !HasLineOfSight(transform.position, player.position)
                                 && lostSightTimer < searchDuration
@@ -50,34 +45,28 @@ public class EnemyMovement : MonoBehaviour
         vehicleBase = GetComponent<VehicleBase>();
         obstacleDetector = GetComponent<ObstacleDetector>();
         rotationController = GetComponent<EnemyRotationController>();
-        candidateManager = new CandidatePositionManager(transform, candidateRadius, groundMask, wallMask, minDistance, maxDistance);
+        candidateManager = GetComponent<CandidatePositionManager>();
 
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
         navigator = new EnemyNavigator(rb, vehicleBase, obstacleDetector, rotationController);
     }
 
-    private void Start() => UpdateCandidatePositions();
+    private void Start()
+    {
+        UpdateCandidatePositions();
+    }
 
     private void FixedUpdate()
     {
-        if (CurrentTarget != Vector3.zero)
+        if (currentTarget != Vector3.zero)
         {
-            navigator.HandleNavigation(CurrentTarget, canMove);
+            navigator.HandleNavigation(currentTarget, canMove);
 
             // Check if reached target
-            if (Vector3.Distance(transform.position, CurrentTarget) <= reachThreshold)
+            if (Vector3.Distance(transform.position, currentTarget) <= reachThreshold)
             {
-                // If we were searching the last known player pos, allow refreshing again
-                if (IsSearching && CurrentTarget == lastKnownPlayerPos)
-                {
-                    UpdateCandidatePositions();
-                    candidateRefreshTimer = 0f; // reset timer when search target is reached
-                }
-                else
-                {
-                    UpdateCandidatePositions();
-                    candidateRefreshTimer = 0f;
-                }
+                UpdateCandidatePositions();
+                candidateRefreshTimer = 0f;
             }
         }
 
@@ -85,18 +74,12 @@ public class EnemyMovement : MonoBehaviour
         candidateRefreshTimer += Time.fixedDeltaTime;
         if (candidateRefreshTimer >= candidateRefreshInterval)
         {
-            // Don’t refresh if currently searching and haven’t reached last known player pos
-            if (!(IsSearching && CurrentTarget == lastKnownPlayerPos))
-            {
-                UpdateCandidatePositions();
-                candidateRefreshTimer = 0f;
-            }
+            UpdateCandidatePositions();
+            candidateRefreshTimer = 0f;
         }
 
         SeekPlayer();
     }
-
-
 
     private void Update()
     {
@@ -136,63 +119,19 @@ public class EnemyMovement : MonoBehaviour
             lostSightTimer = 0f;
             lastKnownPlayerPos = player.position;
         }
-        else
-        {
-            lostSightTimer += Time.fixedDeltaTime;
-            if (IsSearching) CurrentTarget = lastKnownPlayerPos;
-        }
     }
 
     private void UpdateCandidatePositions()
     {
-        candidatePositions = candidateManager.GenerateCandidates(numCandidatePositions, player.position);
-        ScoreCandidates(candidatePositions);
-        PickBestCandidate();
+        candidateManager.GenerateCandidates(transform, groundMask, wallMask);
+        candidateManager.ScoreCandidates(player.position, lastKnownPlayerPos, transform, wallMask);
+        currentTarget = candidateManager.PickBestCandidate().Position;
     }
 
     private bool HasLineOfSight(Vector3 from, Vector3 to)
     {
         return Physics.Raycast(from, (to - from).normalized, out RaycastHit hit) && hit.transform.CompareTag("Player");
     }
-
-    private void PickBestCandidate()
-    {
-        CandidatePosition best = null;
-        float maxScore = float.MinValue;
-        foreach (var c in candidatePositions)
-            if (c.Score > maxScore) { maxScore = c.Score; best = c; }
-        if (best != null) CurrentTarget = best.Position;
-    }
-
-    private void ScoreCandidates(List<CandidatePosition> candidates)
-    {
-        float idealDistance = (minDistance + maxDistance) / 2f;
-
-        foreach (var c in candidates)
-        {
-            float distanceToPlayer = Vector3.Distance(c.Position, player.position);
-
-            // Out of range → minimum score (1)
-            if (distanceToPlayer < minDistance || distanceToPlayer > maxDistance)
-            {
-                c.Score = 1;
-                continue;
-            }
-
-            // Distance score: closer to ideal = higher
-            // Scale from 0 → 80
-            int distanceScore = Mathf.RoundToInt(
-                Mathf.Max(0f, 1f - Mathf.Abs(distanceToPlayer - idealDistance) / idealDistance) * 80f
-            );
-
-            // LOS bonus: 0 or +20
-            int losScore = c.HasLOSPlayer ? 20 : 0;
-
-            // Final score, clamped to 1–100
-            c.Score = Mathf.Clamp(distanceScore + losScore, 1, 100);
-        }
-    }
-
 
     #endregion
 
@@ -206,25 +145,27 @@ public class EnemyMovement : MonoBehaviour
 
     #region Gizmos
 
+    /*
     private void OnDrawGizmos()
     {
-        if (candidatePositions != null)
+        foreach (CandidatePosition c in candidateManager.CandidatePositions())
         {
-            foreach (var c in candidatePositions)
-                c.DrawGizmos();
+            c.DrawGizmos();
         }
+
         if (player != null)
         {
             Gizmos.color = HasLineOfSight(transform.position, player.position) ? Color.green : Color.red;
             Gizmos.DrawLine(transform.position, player.position);
         }
-        if (CurrentTarget != Vector3.zero)
+        if (currentTarget != Vector3.zero)
         {
             Gizmos.color = Color.blue;
-            Gizmos.DrawSphere(CurrentTarget, 0.5f);
-            Gizmos.DrawLine(transform.position, CurrentTarget);
+            Gizmos.DrawSphere(currentTarget, 0.5f);
+            Gizmos.DrawLine(transform.position, currentTarget);
         }
     }
+
 
     private void DrawCandidates(List<CandidatePosition> candidates, Color color)
     {
@@ -237,6 +178,6 @@ public class EnemyMovement : MonoBehaviour
         }
         if (color == Color.green) Gizmos.DrawWireSphere(transform.position, candidateRadius);
     }
-
+    */
     #endregion
 }

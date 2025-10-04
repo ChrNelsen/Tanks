@@ -10,14 +10,6 @@ public class EnemyNavigator
 
     private static readonly float[] allowedAngles = { 45f, 90f, 135f, 180f, 225f, 270f, 315f, 360f };
 
-    public EnemyNavigator(Rigidbody rb, VehicleBase vehicleBase, ObstacleDetector obstacleDetector, EnemyRotationController rotationController)
-    {
-        this.rb = rb;
-        this.vehicleBase = vehicleBase;
-        this.obstacleDetector = obstacleDetector;
-        this.rotationController = rotationController;
-    }
-
     public void HandleNavigation(Vector3 targetPosition, bool canMove)
     {
         // First, check obstacles and rotate if necessary
@@ -93,5 +85,14 @@ public class EnemyNavigator
                 if (allowedAngles[i] < currentY) return allowedAngles[i];
             return allowedAngles[^1]; // wrap around
         }
+    }
+
+    // Constructor
+    public EnemyNavigator(Rigidbody rb, VehicleBase vehicleBase, ObstacleDetector obstacleDetector, EnemyRotationController rotationController)
+    {
+        this.rb = rb;
+        this.vehicleBase = vehicleBase;
+        this.obstacleDetector = obstacleDetector;
+        this.rotationController = rotationController;
     }
 }

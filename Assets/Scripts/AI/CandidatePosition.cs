@@ -3,13 +3,11 @@ using UnityEngine;
 public class CandidatePosition
 {
     public Vector3 Position;
-    public bool HasLOSEnemy;   // LOS to the enemy that generated this position
-    public bool HasLOSPlayer;  // LOS to the player
     public int Score;
+    public bool IsCloseToLastKnownPlayerPos = false;
 
-    private Vector3 playerPos, enemyPos;
-
-    private bool CheckLOS(Vector3 target, LayerMask wallMask)
+    // Check line of sight to a target position
+    public bool CheckLOS(Vector3 target, LayerMask wallMask)
     {
         Vector3 direction = target - Position;
         float distance = direction.magnitude;
@@ -22,36 +20,58 @@ public class CandidatePosition
         return true;
     }
 
-    // Constructor
-    public CandidatePosition(Vector3 position, Vector3 enemyPos, Vector3 playerPos, LayerMask wallMask)
+    // Get distance to a point
+    public float GetDistance(Vector3 aPoint)
     {
-        this.enemyPos = enemyPos;
-        this.playerPos = playerPos;
-        Position = position;
-        Score = 0;
-        HasLOSEnemy = CheckLOS(enemyPos, wallMask);
-        HasLOSPlayer = CheckLOS(playerPos, wallMask);
+        return Vector3.Distance(Position, aPoint);
     }
 
-    // Gizmo debug for this candidate
-    public void DrawGizmos()
+    // Check if away from enemies within a certain radius
+    public bool AwayFromEnemies(float radius = 5f)
     {
-        // Candidate sphere
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(Position, 0.3f);
+        Collider[] hitColliders = Physics.OverlapSphere(Position, radius);
+        foreach (var hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag("Enemy"))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 
-        // LOS to enemy
-        Gizmos.color = HasLOSEnemy ? Color.green : Color.red;
-        Gizmos.DrawLine(Position, enemyPos);
+    // Check if candidate is in front of the enemy and not blocked
+    public bool IsInFront(Transform enemyPos, LayerMask wallMask)
+    {
+        Vector3 enemyForwardDir = enemyPos.transform.forward;
+        float angle = Vector3.Angle(enemyForwardDir, Position);
+        if (angle <= 90f && CheckLOS(enemyPos.transform.position, wallMask))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
-        // LOS to player
-        Gizmos.color = HasLOSPlayer ? Color.green : Color.red;
-        Gizmos.DrawLine(Position, playerPos);
-
-        // Score label drawn above candidate
-        #if UNITY_EDITOR
-        Vector3 labelPos = Position + Vector3.up * 1f; // raise slightly above
-        UnityEditor.Handles.Label(labelPos, Score.ToString());
-        #endif
+    // Check if within min and max distance from player
+    public bool IsWithinMinMax(Vector3 playerPos, float minDistance, float maxDistance)
+    {
+        if (GetDistance(playerPos) >= minDistance && GetDistance(playerPos) <= maxDistance)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    // Constructor
+    public CandidatePosition(Vector3 position)
+    {
+        Position = position;
+        Score = 0;
     }
 }
